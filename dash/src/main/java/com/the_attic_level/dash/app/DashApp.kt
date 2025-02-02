@@ -12,7 +12,6 @@ import com.the_attic_level.dash.ui.activity.ActivityEvent
 import com.the_attic_level.dash.ui.activity.LifecycleEvent
 import java.lang.ref.WeakReference
 
-@Suppress("LeakingThis")
 abstract class DashApp: Application()
 {
     // ----------------------------------------
