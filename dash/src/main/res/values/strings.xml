@@ -1,0 +1,17 @@
+<resources>
+    
+    <string name="app_name">Dash</string>
+    
+    <!-- dialog actions -->
+    
+    <string name="button_yes"     >YES</string>
+    <string name="button_ok"      >OK</string>
+    <string name="button_no"      >NO</string>
+    <string name="button_cancel"  >CANCEL</string>
+    <string name="button_save"    >SAVE</string>
+    <string name="button_send"    >SEND</string>
+    <string name="button_share"   >SHARE</string>
+    <string name="button_apply"   >APPLY</string>
+    <string name="button_continue">CONTINUE</string>
+    
+</resources>
