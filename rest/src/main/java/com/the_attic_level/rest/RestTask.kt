@@ -1,8 +1,8 @@
-package com.the_attic_level.dash.sys.rest
+package com.the_attic_level.rest
 
 import com.the_attic_level.dash.app.DashApp
-import com.the_attic_level.dash.sys.rest.config.RestConfig
 import com.the_attic_level.dash.sys.work.WorkHandle
+import com.the_attic_level.rest.config.RestConfig
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
@@ -12,8 +12,8 @@ abstract class RestTask(protected val config: RestConfig): WorkHandle()
     // ----------------------------------------
     // Methods (Protected)
     
-    protected fun request(endpoint: RestEndpoint, body: RequestBody?, vararg args: Any?): Response {
-        return request(this.config, endpoint, body, args)
+    protected fun request(endpoint: RestEndpoint, body: RequestBody?, vararg args: Any): Response {
+        return request(this.config, endpoint, body, *args)
     }
     
     // ----------------------------------------
@@ -25,9 +25,9 @@ abstract class RestTask(protected val config: RestConfig): WorkHandle()
             DashApp.shared.schedule(DashApp.WORK_TYPE_REST, task, listener)
         }
         
-        fun request(config: RestConfig, endpoint: RestEndpoint, body: RequestBody?, vararg args: Any?): Response
+        fun request(config: RestConfig, endpoint: RestEndpoint, body: RequestBody?, vararg args: Any): Response
         {
-            if (!NetworkUtil.isNetworkAvailable) {
+            if (!DashApp.shared.isNetworkAvailable) {
                 throw RestException("no network available")
             }
             

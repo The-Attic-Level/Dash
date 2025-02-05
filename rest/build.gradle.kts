@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.the_attic_level.dash"
+    namespace = "com.the_attic_level.rest"
     compileSdk = 35
     
     defaultConfig {
@@ -22,5 +22,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":dash"))
     implementation(libs.androidx.core.ktx)
+    implementation(libs.okhttp)
 }

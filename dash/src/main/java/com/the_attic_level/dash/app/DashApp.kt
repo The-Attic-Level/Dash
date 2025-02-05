@@ -2,7 +2,13 @@ package com.the_attic_level.dash.app
 
 import android.app.Activity
 import android.app.Application
-import com.the_attic_level.dash.sys.rest.NetworkUtil
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import androidx.core.content.ContextCompat
+import com.the_attic_level.dash.sys.Logger
 import com.the_attic_level.dash.sys.sync.SyncHandler
 import com.the_attic_level.dash.sys.work.WorkHandle
 import com.the_attic_level.dash.sys.work.WorkHandler
@@ -43,25 +49,30 @@ abstract class DashApp: Application()
     // ----------------------------------------
     // Members
     
-    var activity: Activity? = null
+    var currentActivity: Activity? = null
         private set
     
-    var count = 0
+    var activityCount = 0
+        private set
+    
+    var isNetworkAvailable = false
+        private set
+    
+    var isNetworkMetered = false
         private set
     
     // ----------------------------------------
     // Properties
     
-    val style: UIStyle by lazy {
+    open val style: UIStyle by lazy {
         UIStyle()
     }
-    
-    abstract val networkType: NetworkUtil.Type
     
     // ----------------------------------------
     // Init
     
     init {
+        @Suppress("LeakingThis")
         instance = WeakReference(this)
     }
     
@@ -72,11 +83,8 @@ abstract class DashApp: Application()
     {
         super.onCreate()
         
-        // update UI metrics before any activities gets created
+        // update UI metrics before any activities get created
         updateLayout()
-        
-        // request optional network changes
-        NetworkUtil.request(this.networkType)
         
         // pass application event
         onAppCreated()
@@ -92,8 +100,8 @@ abstract class DashApp: Application()
                 onActivated(activity)
             }
             LifecycleEvent.ON_PRE_START -> {
-                ++count
-                if (count == 1) {
+                ++this.activityCount
+                if (this.activityCount == 1) {
                     startWorkers()
                     onAppStarted()
                 }
@@ -102,8 +110,8 @@ abstract class DashApp: Application()
             LifecycleEvent.ON_POST_STOP -> {
                 onDeactivated(activity)
                 onActivityEvent(activity, event.activityEvent!!)
-                --this.count
-                if (this.count == 0) {
+                --this.activityCount
+                if (this.activityCount == 0) {
                     onAppStopped()
                 }
             }
@@ -143,7 +151,7 @@ abstract class DashApp: Application()
     }
     
     // ----------------------------------------
-    // Abstract
+    // Abstract (Events)
     
     abstract fun onAppCreated()
     abstract fun onAppStarted()
@@ -162,19 +170,86 @@ abstract class DashApp: Application()
     }
     
     // ----------------------------------------
+    // Network Events
+    
+    protected open fun onNetworkAvailable(network: Network) {
+        this.isNetworkAvailable = true
+    }
+    
+    protected open fun onNetworkCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+        this.isNetworkMetered = !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
+    
+    protected open fun onNetworkLost(network: Network) {
+        this.isNetworkAvailable = false
+    }
+    
+    // ----------------------------------------
+    // Methods (Network)
+    
+    /** Requests network changes for wifi and cellular networks. */
+    protected fun requestNetwork(wifi: Boolean, cellular: Boolean) {
+        requestNetwork(NetworkRequest.Builder().also {
+            it.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            if (wifi) {
+                it.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            }
+            if (cellular) {
+                it.addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            }
+        }.build())
+    }
+    
+    /** Requests network changes for the given requests, using the default callback. */
+    protected fun requestNetwork(request: NetworkRequest)
+    {
+        requestNetwork(request, object: NetworkCallback()
+        {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                onNetworkAvailable(network)
+            }
+            
+            override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+                super.onCapabilitiesChanged(network, capabilities)
+                onNetworkCapabilitiesChanged(network, capabilities)
+            }
+            
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                onNetworkLost(network)
+            }
+        })
+    }
+    
+    /** Uses the given request and callback to request network changes. */
+    protected fun requestNetwork(request: NetworkRequest, callback: NetworkCallback)
+    {
+        // get connectivity manager
+        val manager = ContextCompat.getSystemService(this,
+            ConnectivityManager::class.java) ?: return
+        
+        try {
+            manager.requestNetwork(request, callback)
+        } catch (e: Exception) {
+            Logger.error(this, "unable to request network: ${e.message}")
+        }
+    }
+    
+    // ----------------------------------------
     // Methods (Private)
     
     private fun onActivated(activity: Activity) {
-        val before = this.activity
-        this.activity = activity
+        val before = this.currentActivity
+        this.currentActivity = activity
         if (before !== activity) {
             onActivityChanged(before, activity)
         }
     }
     
     private fun onDeactivated(activity: Activity) {
-        if (this.activity === activity) {
-            this.activity = null
+        if (this.currentActivity === activity) {
+            this.currentActivity = null
             onActivityChanged(activity, null)
         }
     }

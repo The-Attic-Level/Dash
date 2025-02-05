@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         google()
@@ -15,3 +17,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Dash"
 include(":dash")
+include(":rest")
+ 

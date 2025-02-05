@@ -1,7 +1,7 @@
-package com.the_attic_level.dash.sys.rest
+package com.the_attic_level.rest
 
 import com.the_attic_level.dash.sys.file.FileUtil
-import com.the_attic_level.dash.sys.rest.config.RestConfig
+import com.the_attic_level.rest.config.RestConfig
 import okhttp3.Response
 import java.io.InputStream
 

@@ -1,7 +1,6 @@
 package com.the_attic_level.dash.app
 
 import android.app.Activity
-import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -15,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.Insets
 import com.the_attic_level.dash.sys.Logger
-import com.the_attic_level.dash.sys.rest.NetworkUtil
 import com.the_attic_level.dash.sys.sync.SyncHandler
 import com.the_attic_level.dash.ui.activity.ActivityEvent
 import com.the_attic_level.dash.ui.activity.ActivityResult
@@ -50,10 +48,10 @@ class Dash
         // ------------------------------------------------------------
         
         val isNetworkAvailable: Boolean
-            get() = NetworkUtil.isNetworkAvailable
+            get() = DashApp.shared.isNetworkAvailable
         
-        val isNetworkNotMetered: Boolean
-            get() = NetworkUtil.isNetworkNotMetered
+        val isNetworkMetered: Boolean
+            get() = DashApp.shared.isNetworkMetered
         
         // ------------------------------------------------------------
         // Thread Utils
@@ -85,7 +83,7 @@ class Dash
         // Application / Resources
         // ------------------------------------------------------------
         
-        val app: Application
+        val app: DashApp
             get() = DashApp.shared
         
         val packageName: String
@@ -254,7 +252,7 @@ class Dash
         const val CLEAR_STACK = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         
         val currentActivity: Activity?
-            get() = DashApp.shared.activity
+            get() = DashApp.shared.currentActivity
         
         fun <T: Activity> start(cls: Class<T>, flags: Int = 0): Boolean {
             val activity = this.currentActivity

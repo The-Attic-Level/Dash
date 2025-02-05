@@ -1,6 +1,6 @@
-package com.the_attic_level.dash.sys.rest
+package com.the_attic_level.rest
 
-import com.the_attic_level.dash.sys.rest.config.RestConfig
+import com.the_attic_level.rest.config.RestConfig
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
@@ -11,7 +11,7 @@ abstract class RestHandle(config: RestConfig, protected val endpoint: RestEndpoi
     // Work Handle
     
     final override fun onRun() {
-        onResponse(request(this.endpoint, this.requestBody, this.requestArguments))
+        onResponse(request(this.endpoint, this.requestBody, *this.requestArguments))
     }
     
     // ----------------------------------------
@@ -22,12 +22,12 @@ abstract class RestHandle(config: RestConfig, protected val endpoint: RestEndpoi
     // ----------------------------------------
     // Methods (Protected)
     
-    protected open val requestString: String
-        get() = ""
+    protected open val requestString: String?
+        get() = null
     
     protected open val requestArguments: Array<Any>
         get() = emptyArray()
     
-    protected open val requestBody: RequestBody
-        get() = this.requestString.toRequestBody(this.endpoint.type)
+    protected open val requestBody: RequestBody?
+        get() = this.requestString?.toRequestBody(this.endpoint.type)
 }

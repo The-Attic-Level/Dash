@@ -1,4 +1,4 @@
-package com.the_attic_level.dash.sys.rest.config
+package com.the_attic_level.rest.config
 
 import com.the_attic_level.dash.sys.Logger
 import okhttp3.OkHttpClient

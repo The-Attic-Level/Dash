@@ -1,6 +1,6 @@
-package com.the_attic_level.dash.sys.rest
+package com.the_attic_level.rest
 
-import com.the_attic_level.dash.sys.rest.http.HTTPMethod
+import com.the_attic_level.rest.http.HTTPMethod
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 

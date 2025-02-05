@@ -1,4 +1,4 @@
-package com.the_attic_level.dash.sys.rest.config
+package com.the_attic_level.rest.config
 
 import okhttp3.Request
 

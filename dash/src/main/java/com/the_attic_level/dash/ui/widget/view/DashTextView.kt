@@ -2,11 +2,11 @@ package com.the_attic_level.dash.ui.widget.view
 
 import android.content.Context
 import android.text.Layout
-import androidx.appcompat.widget.AppCompatTextView
+import android.widget.TextView
 import kotlin.math.ceil
 import kotlin.math.max
 
-class DashTextView(context: Context): AppCompatTextView(context)
+class DashTextView(context: Context): TextView(context)
 {
     // ----------------------------------------
     // Members

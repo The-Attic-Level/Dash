@@ -2,6 +2,7 @@ package com.the_attic_level.dash.sys.work
 
 import android.os.SystemClock
 import com.the_attic_level.dash.app.Dash
+import com.the_attic_level.dash.app.DashApp
 
 abstract class ThreadHandler(
     val name    : String,
@@ -35,8 +36,11 @@ abstract class ThreadHandler(
     // ----------------------------------------
     // Members
     
-    private var worker : Worker? = null
-    private var timer  : Long    = 0L
+    @Volatile
+    private var worker: Worker? = null
+    
+    @Volatile
+    private var timer: Long = 0L
     
     // ----------------------------------------
     // Methods
@@ -44,7 +48,7 @@ abstract class ThreadHandler(
     fun start() {
         if (this.worker == null) {
             synchronized(this) {
-                if (this.worker == null && this.isWorkerRequired) {
+                if (this.worker == null && canStartWorker()) {
                     this.timer = 0
                     this.worker = Worker(this.name)
                     this.worker?.start()
@@ -62,8 +66,12 @@ abstract class ThreadHandler(
     // ----------------------------------------
     // Worker Events
     
+    private fun canStartWorker(): Boolean {
+        return DashApp.shared.activityCount >= 1 && this.isWorkerRequired
+    }
+    
     private fun canStopWorker(): Boolean {
-        return Dash.currentActivity == null || !this.isWorkerRequired
+        return DashApp.shared.activityCount <= 0 || !this.isWorkerRequired
     }
     
     private fun onWorkerUpdate(worker: Worker)
@@ -81,8 +89,14 @@ abstract class ThreadHandler(
             }
         } else if (canStopWorker()) {
             synchronized(this) {
-                // set timeout to stop worker
-                this.timer = SystemClock.elapsedRealtime() + this.timeout
+                // check if the app is in background
+                if (DashApp.shared.activityCount <= 0) {
+                    // stop worker at the next occasion
+                    this.timer = SystemClock.elapsedRealtime()
+                } else {
+                    // set timeout to stop the worker
+                    this.timer = SystemClock.elapsedRealtime() + this.timeout
+                }
             }
         }
         

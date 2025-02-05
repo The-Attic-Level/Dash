@@ -7,8 +7,7 @@ class DelayedTask(private val runnable: Runnable, private val delay: Long=0): Sy
     // ----------------------------------------
     // Members (Final)
     
-    private val runAt
-        get() = if (this.delay > 0) SystemClock.elapsedRealtime() + this.delay else 0
+    private val runAt = if (this.delay > 0) SystemClock.elapsedRealtime() + this.delay else 0
     
     // ----------------------------------------
     // Sync Handler Task

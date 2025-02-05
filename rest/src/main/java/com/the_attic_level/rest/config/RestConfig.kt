@@ -1,9 +1,9 @@
-package com.the_attic_level.dash.sys.rest.config
+package com.the_attic_level.rest.config
 
-import com.the_attic_level.dash.sys.rest.RestEndpoint
-import com.the_attic_level.dash.sys.rest.RestException
-import com.the_attic_level.dash.sys.rest.http.HTTPMethod
-import com.the_attic_level.dash.sys.rest.http.HTTPProtocol
+import com.the_attic_level.rest.RestEndpoint
+import com.the_attic_level.rest.RestException
+import com.the_attic_level.rest.http.HTTPMethod
+import com.the_attic_level.rest.http.HTTPProtocol
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -22,8 +22,10 @@ open class RestConfig(
     // Init
     
     constructor(protocol: HTTPProtocol, hostname: String, path: String,
-                certs: Array<ClientConfig.Cert> = ClientConfig.NO_CERTS) : this(
-        ClientConfig(hostname, certs), ServerConfig(protocol.prefix + hostname + path), HeaderConfig())
+                certs: Array<ClientConfig.Cert> = ClientConfig.NO_CERTS
+    ) : this(
+        ClientConfig(hostname, certs), ServerConfig(protocol.prefix + hostname + path), HeaderConfig()
+    )
     
     // ----------------------------------------
     // Methods

@@ -133,7 +133,10 @@ abstract class DashActivity: Activity(), DashParent
         {
             WindowCompat.setDecorFitsSystemWindows(this.window, false)
             
-            this.window.statusBarColor     = Color.TRANSPARENT
+            @Suppress("DEPRECATION")
+            this.window.statusBarColor = Color.TRANSPARENT
+            
+            @Suppress("DEPRECATION")
             this.window.navigationBarColor = Color.TRANSPARENT
             
             val handled = booleanArrayOf(false)
